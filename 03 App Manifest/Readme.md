@@ -47,27 +47,27 @@ The distinction between the package name in the manifest and the applicationId i
 
 However, if you decide to make your code's namespace (and thus, the package name in the manifest) something different from the applicationId from the build file, be sure you fully understand the implications of setting the application ID. That page explains how you can safely adjust the manifest's package name independent of the build file's applicationId, and change the application ID for different build configurations.
 
-App components
+### App components
 For each app component that you create in your app, you must declare a corresponding XML element in the manifest file:
-
+```
 <activity> for each subclass of Activity.
 <service> for each subclass of Service.
 <receiver> for each subclass of BroadcastReceiver.
 <provider> for each subclass of ContentProvider.
+```
 If you subclass any of these components without declaring it in the manifest file, the system cannot start it.
 
 The name of your subclass must be specified with the name attribute, using the full package designation. For example, an Activity subclass can be declared as follows:
-
-
+```
 <manifest ... >
     <application ... >
         <activity android:name="com.example.myapp.MainActivity" ... >
         </activity>
     </application>
 </manifest>
+```
 However, if the first character in the name value is a period, the app's package name (from the <manifest> element's package attribute) is prefixed to the name. For example, the following activity name is resolved to `"com.example.myapp.MainActivity"`:
-
-
+```
 <manifest package="com.example.myapp" ... >
     <application ... >
         <activity android:name=".MainActivity" ... >
@@ -75,60 +75,62 @@ However, if the first character in the name value is a period, the app's package
         </activity>
     </application>
 </manifest>
+```
 If you have app components that reside in sub-packages (such as in com.example.myapp.purchases), the name value must add the missing sub-package names (such as ".purchases.PayActivity") or use the fully-qualified package name.
 
-Intent filters
+### Intent filters
+
 App activities, services, and broadcast receivers are activated by intents. An intent is a message defined by an Intent object that describes an action to perform, including the data to be acted upon, the category of component that should perform the action, and other instructions.
 
 When an app issues an intent to the system, the system locates an app component that can handle the intent based on intent filter declarations in each app's manifest file. The system launches an instance of the matching component and passes the Intent object to that component. If more than one app can handle the intent, then the user can select which app to use.
 
 An app component can have any number of intent filters (defined with the <intent-filter> element), each one describing a different capability of that component.
 
-For more information, see the Intents and Intent Filters document.
-
-Icons and labels
+### Icons and labels
 A number of manifest elements have icon and label attributes for displaying a small icon and a text label, respectively, to users for the corresponding app component.
 
 In every case, the icon and label that are set in a parent element become the default icon and label value for all child elements. For example, the icon and label that are set in the <application> element are the default icon and label for each of the app's components (such as all activities).
 
 The icon and label that are set in a component's <intent-filter> are shown to the user whenever that component is presented as an option to fulfill an intent. By default, this icon is inherited from whichever icon is declared for the parent component (either the <activity> or <application> element), but you might want to change the icon for an intent filter if it provides a unique action that you'd like to better indicate in the chooser dialog. For more information, see Allow Other Apps to Start Your Activity.
 
-Permissions
+### Permissions
 Android apps must request permission to access sensitive user data (such as contacts and SMS) or certain system features (such as the camera and internet access). Each permission is identified by a unique label. For example, an app that needs to send SMS messages must have the following line in the manifest:
 
-
+```
 <manifest ... >
     <uses-permission android:name="android.permission.SEND_SMS"/>
     ...
 </manifest>
+```
 Beginning with Android 6.0 (API level 23), the user can approve or reject some app permisions at runtime. But no matter which Android version your app supports, you must declare all permission requests with a <uses-permission> element in the manifest. If the permission is granted, the app is able to use the protected features. If not, its attempts to access those features fail.
 
 Your app can also protect its own components with permissions. It can use any of the permissions that are defined by Android, as listed in android.Manifest.permission, or a permission that's declared in another app. Your app can also define its own permissions. A new permission is declared with the <permission> element.
 
-For more information, see the Permissions Overview.
-
-Device compatibility
+### Device compatibility
 The manifest file is also where you can declare what types of hardware or software features your app requires, and thus, which types of devices your app is compatible with. Google Play Store does not allow your app to be installed on devices that don't provide the features or system version that your app requires.
 
 There are several manifest tags that define which devices your app is compatible with. The following are just a couple of the most common tags.
 
-<uses-feature>
+***<uses-feature>***
+
 The <uses-feature> element allows you to declare hardware and software features your app needs. For example, if your app cannot achieve basic functionality on a device without a compass sensor, you can declare the compass sensor as required with the following manifest tag:
 
-
+```
 <manifest ... >
     <uses-feature android:name="android.hardware.sensor.compass"
                   android:required="true" />
     ...
 </manifest>
+```
 Note: If you'd like to make your app available on Chromebooks, there are some important hardware and software feature limitations that you should consider. For more information, see App Manifest Compatibility for Chromebooks.
 
-<uses-sdk>
+**<uses-sdk>**
+    
 Each successive platform version often adds new APIs not available in the previous version. To indicate the minimum version with which your app is compatible, your manifest must include the <uses-sdk> tag and its minSdkVersion attribute.
 
 However, beware that attributes in the <uses-sdk> element are overridden by corresponding properties in the build.gradle file. So if you're using Android Studio, you must specify the minSdkVersion and targetSdkVersion values there instead:
 
-
+```
 android {
   defaultConfig {
     applicationId 'com.example.myapp'
@@ -142,14 +144,15 @@ android {
     ...
   }
 }
+```
 For more information about the build.gradle file, read about how to configure your build.
 
 To learn more about how to declare your app's support for different devices, see the Device Compatibility Overview.
 
-File conventions
+### File conventions
 This section describes the conventions and rules that generally apply to all elements and attributes in the manifest file.
 
-Elements
+### Elements
 Only the <manifest> and <application> elements are required. They each must occur only once. Most of the other elements can occur zero or more times. However, some of them must be present to make the manifest file useful.
 All of the values are set through attributes, not as character data within an element.
 
@@ -161,38 +164,39 @@ Attributes
 Technically, all attributes are optional. However, many attributes must be specified so that an element can accomplish its purpose. For truly optional attributes, the reference documentation indicates the default values.
 Except for some attributes of the root <manifest> element, all attribute names begin with an android: prefix. For example, android:alwaysRetainTaskState. Because the prefix is universal, the documentation generally omits it when referring to attributes by name.
 
-Multiple values
+#### Multiple values
 If more than one value can be specified, the element is almost always repeated, rather than multiple values being listed within a single element. For example, an intent filter can list several actions:
-
+```
 <intent-filter ... >
     <action android:name="android.intent.action.EDIT" />
     <action android:name="android.intent.action.INSERT" />
     <action android:name="android.intent.action.DELETE" />
     ...
 </intent-filter>
-Resource values
+```
+
+#### Resource values
 Some attributes have values that are displayed to users, such as the title for an activity or your app icon. The value for these attributes might differ based on the user's language or other device configurations (such as to provide a different icon size based on the device's pixel density), so the values should be set from a resource or theme, instead of hard-coded into the manifest file. The actual value can then change based on alternative resources that you provide for different device configurations.
 Resources are expressed as values with the following format:
-
+```
 "@[package:]type/name"
-
+```
 You can omit the package name if the resource is provided by your app (including if it is provided by a library dependency, because library resources are merged into yours). The only other valid package name is android, when you want to use a resource from the Android framework.
 
 The type is a type of resource, such as string or drawable, and the name is the name that identifies the specific resource. Here is an example:
 
-
 <activity android:icon="@drawable/smallPic" ... >
-For more information about how to add resources in your project, read Providing Resources.
+
 
 To instead apply a value that's defined in a theme, the first character must be ? instead of @:
 
 "?[package:]type/name"
 
-String values
+#### String values
 Where an attribute value is a string, you must use double backslashes (\\) to escape characters, such as \\n for a newline or \\uxxxx for a Unicode character.
 Manifest elements reference
 The following table provides links to reference documents for all valid elements in the AndroidManifest.xml file.
-
+```
 <action>	Adds an action to an intent filter.
 <activity>	Declares an activity component.
 <activity-alias>	Declares an alias for an activity.
@@ -220,10 +224,12 @@ The following table provides links to reference documents for all valid elements
 <uses-permission>	Specifies a system permission that the user must grant in order for the app to operate correctly.
 <uses-permission-sdk-23>	Specifies that an app wants a particular permission, but only if the app is installed on a device running Android 6.0 (API level 23) or higher.
 <uses-sdk>	Lets you express an application's compatibility with one or more versions of the Android platform, by means of an API level integer.
+```
 Example manifest file
+
 The XML below is a simple example AndroidManifest.xml that declares two activities for the app.
 
-
+```
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -256,3 +262,4 @@ The XML below is a simple example AndroidManifest.xml that declares two activiti
             android:parentActivityName=".MainActivity" />
     </application>
 </manifest>
+```
