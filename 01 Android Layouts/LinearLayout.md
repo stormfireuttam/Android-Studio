@@ -1,5 +1,6 @@
 # Linear Layout
 
+<img src="https://github.com/stormfireuttam/Android-Studio/blob/main/01%20Android%20Layouts/images/ViewGroup.jpg"/>
 A layout that arranges other views either horizontally in a single column or vertically in a single row.
 
 The following snippet shows how to include a linear layout in your layout XML file:
@@ -24,3 +25,4 @@ To control how linear layout aligns all the views it contains, set a value for a
 
 You can set android:layout_weight on individual child views to specify how linear layout divides remaining space amongst the views it contains. See the Linear Layout guide for an example.
 
+<img src="https://github.com/stormfireuttam/Android-Studio/blob/main/01%20Android%20Layouts/images/LayoutWeight.jpg"/>
